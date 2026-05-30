@@ -1,0 +1,148 @@
+:root {
+  --bg: #fbfbf9;
+  --ink: #26241f;
+  --muted: #8a8780;
+  --line: #e4e1d8;
+  --panel: #ffffff;
+  --accent: #2f6df6;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+#view {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* top bar — transparent to pointer except on its controls, so the canvas
+   stays draggable everywhere */
+#bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  pointer-events: none;
+}
+/* one soft gradient scrim across the top — tall enough to sit under the toolbar,
+   fading to nothing just below it, so the controls read over the busy charge
+   canvas. Only shown in phase 2 (the geometry/run canvases don't need it). */
+#bar::before {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 96px;
+  z-index: -1;
+  pointer-events: none;
+  display: none;
+  background: linear-gradient(to bottom, rgba(17, 17, 17, 0.24) 0%, rgba(17, 17, 17, 0.10) 45%, transparent 100%);
+}
+body[data-phase="charge"] #bar::before { display: block; }
+#bar > * { pointer-events: auto; }
+#tools { flex: 1; display: flex; align-items: center; gap: 12px; }
+#actions { display: flex; align-items: center; gap: 8px; }
+
+#phase {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 64px;
+  text-shadow: 0 0 4px var(--bg), 0 0 8px var(--bg); /* halo so it reads over the canvas */
+}
+
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius: 10px;
+  backdrop-filter: blur(12px) saturate(1.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+}
+
+/* inline tile-size control (geometry toolbar) */
+.dim {
+  width: 48px;
+  font-family: var(--mono);
+  font-size: 15px;
+  text-align: center;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  border-radius: 6px;
+}
+.dim:focus { outline: none; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.x { color: var(--muted); font-size: 13px; padding: 0 1px; }
+
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1;
+  padding: 8px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.group .btn { background: transparent; }
+.btn:hover { background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn.active { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 88%, #000); }
+.btn.primary:disabled { background: var(--muted); border-color: var(--muted); }
+.btn.ok { color: #15803d; } /* copy-confirmation text */
+.btn.brush { font-size: 22px; line-height: 1; min-width: 46px; padding: 9px 10px; }
+
+/* decorative cell-tint swatches */
+.btn.swatch { width: 28px; min-width: 28px; height: 28px; padding: 0; border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.12); }
+.btn.swatch:hover { filter: brightness(0.96); }
+.btn.swatch.active { outline: 2px solid var(--ink); outline-offset: 1px; }
+.btn.big { padding: 11px 18px; font-size: 14px; }
+
+.speed { width: 110px; accent-color: var(--accent); cursor: pointer; vertical-align: middle; }
+.cap { color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 0 6px 0 4px; }
+.val { font-family: var(--mono); font-size: 12px; color: var(--ink); padding: 0 6px; min-width: 46px; text-align: right; }
+
+#statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+  text-shadow: 0 0 4px var(--bg), 0 0 8px var(--bg);
+}
+
